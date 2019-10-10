@@ -5,7 +5,7 @@ let i = 0;
 
 describe('event.create.test.js', () => {
   before(() => {
-    cy.login({ redirect: '/testcollective' });
+    cy.login({ redirect: '/dhruv-jain-club' });
     cy.get('#events .action').click();
   });
 
@@ -41,7 +41,9 @@ describe('event.create.test.js', () => {
       .blur();
     cy.wait(300);
     cy.screenshot(`s${i++}`);
-    cy.get('.actions button').click();
+    cy.get('.actions button')
+      .eq(0)
+      .click();
     cy.wait(500);
     cy.screenshot(`s${i++}`);
     cy.get('#location .address').contains('Lesbroussart');
@@ -56,7 +58,9 @@ describe('event.create.test.js', () => {
     cy.get('.inputs .inputField.name input', { timeout: 10000 }).type(`{selectall}${updatedTitle}`);
     cy.get('.EditTiers .tier:nth-child(2) .removeTier').click();
     cy.wait(300);
-    cy.get('.actions button').click();
+    cy.get('.actions button')
+      .eq(0)
+      .click();
     cy.wait(500);
     cy.reload(true);
     cy.wait(500);

@@ -5,7 +5,7 @@ let i = 0;
 
 describe('event.create.test.js', () => {
   before(() => {
-    cy.login({ redirect: '/dhruv-jain-club' });
+    cy.login({ redirect: '/testcollective' });
     cy.get('#events .action').click();
   });
 

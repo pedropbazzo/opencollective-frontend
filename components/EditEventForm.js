@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { defineMessages, injectIntl } from 'react-intl';
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 
 import Button from './Button';
 import InputField from './InputField';
 import EditTiers from './EditTiers';
+import Container from './Container';
+import { P } from './Text';
+import Modal, { ModalBody, ModalHeader, ModalFooter } from './StyledModal';
 
 class EditEventForm extends React.Component {
   static propTypes = {
@@ -21,10 +24,10 @@ class EditEventForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleTiersChange = this.handleTiersChange.bind(this);
-
+    this.handleModal = this.handleModal.bind(this);
     const event = { ...(props.event || {}) };
     event.slug = event.slug ? event.slug.replace(/.*\//, '') : '';
-    this.state = { event, tiers: event.tiers || [{}], disabled: false };
+    this.state = { event, tiers: event.tiers || [{}], disabled: false, showDeleteModal: false };
 
     this.messages = defineMessages({
       'slug.label': { id: 'event.slug.label', defaultMessage: 'url' },
@@ -95,6 +98,12 @@ class EditEventForm extends React.Component {
 
   handleTiersChange(tiers) {
     this.setState(tiers);
+  }
+
+  handleModal() {
+    this.setState(state => ({
+      showDeleteModal: !state.showDeleteModal,
+    }));
   }
 
   async handleSubmit() {
@@ -247,7 +256,49 @@ class EditEventForm extends React.Component {
             onClick={this.handleSubmit}
             disabled={this.state.disabled ? true : loading}
           />
-          {!isNew && <Button className="blue" label={deleteBtnLabel} onClick={onDelete} />}
+          {!isNew && (
+            <>
+              <Button className="blue" label={deleteBtnLabel} onClick={this.handleModal} />
+              <Modal width="570px" show={this.state.showDeleteModal} onClose={this.handleModal}>
+                <ModalHeader>
+                  <FormattedMessage
+                    id="collective.delete.modal.header"
+                    values={{ name: event.name }}
+                    defaultMessage={'Delete {name}'}
+                  />
+                </ModalHeader>
+                <ModalBody>
+                  <P>
+                    <FormattedMessage
+                      id="collective.delete.modal.body"
+                      values={{ type: event.type.toLowerCase() }}
+                      defaultMessage={'Are you sure you want to delete this {type}?'}
+                    />
+                  </P>
+                </ModalBody>
+                <ModalFooter>
+                  <Container display="flex" justifyContent="flex-end">
+                    <div>
+                      <Button
+                        className="blue"
+                        label={<FormattedMessage id="collective.delete.cancel.btn" defaultMessage={'Cancel'} />}
+                        onClick={this.handleModal}
+                      />
+                      {'  '}
+                      <Button
+                        className="blue"
+                        label={<FormattedMessage id="collective.delete.confirm.btn" defaultMessage={'Delete'} />}
+                        onClick={() => {
+                          this.handleModal();
+                          onDelete();
+                        }}
+                      />
+                    </div>
+                  </Container>
+                </ModalFooter>
+              </Modal>
+            </>
+          )}
         </div>
       </div>
     );
